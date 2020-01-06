@@ -25,6 +25,9 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     var progressLbl: UILabel?
     let screenSize = UIScreen.main.bounds
     
+    var flowLayout = UICollectionViewFlowLayout()
+    var collectionView: UICollectionView?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -34,6 +37,13 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         configureLocationServices()
         addDoubleTap()
         addSwipe()
+        
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: flowLayout)
+        collectionView?.register(PhotoCell.self, forCellWithReuseIdentifier: "photoCell")
+        collectionView?.delegate = self
+        collectionView?.dataSource = self
+        collectionView?.backgroundColor = #colorLiteral(red: 0.7450980544, green: 0.1568627506, blue: 0.07450980693, alpha: 1)
+        pullUpView.addSubview(collectionView!)
     }
     
     func addDoubleTap() {
@@ -73,7 +83,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         spinner?.style = .large
         spinner?.color = #colorLiteral(red: 0.3333333433, green: 0.3333333433, blue: 0.3333333433, alpha: 1)
         spinner?.startAnimating()
-        pullUpView.addSubview(spinner!)
+        collectionView?.addSubview(spinner!)
     }
     
     func removeSpinner() {
@@ -84,12 +94,12 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     
     func addProgressLabel() {
         progressLbl = UILabel()
-        progressLbl?.frame = CGRect(x: (screenSize.width/2)-(150/2), y: 175, width: 300, height: 40)
+        progressLbl?.frame = CGRect(x: (screenSize.width/2)-(300/2), y: 175, width: 300, height: 40)
         progressLbl?.font = UIFont(name: "Avenir-Next", size: 18)
         progressLbl?.textColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
         progressLbl?.textAlignment = .center
         //progressLbl?.text = "12/40 photos loaded"
-        pullUpView.addSubview(progressLbl!)
+        collectionView?.addSubview(progressLbl!)
     }
     
     func removeProgressLabel() {
@@ -170,5 +180,18 @@ extension MapVC: CLLocationManagerDelegate {
     //Authorization changes
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         centerMapOnUserLocation()
+    }
+}
+
+extension MapVC: UICollectionViewDelegate, UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 4
+    }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? PhotoCell
+        return cell!
     }
 }
