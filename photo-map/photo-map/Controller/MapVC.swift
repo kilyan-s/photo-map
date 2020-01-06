@@ -14,11 +14,16 @@ import CoreLocation
 class MapVC: UIViewController, UIGestureRecognizerDelegate {
     //Outlets
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var pullUpView: UIView!
+    @IBOutlet weak var pullUpViewHeightConstraint: NSLayoutConstraint!
     
     //Variables
     var locationManager = CLLocationManager()
     let authStatus = CLLocationManager.authorizationStatus()
     let regionRadius: Double = 1000
+    var spinner: UIActivityIndicatorView?
+    var progressLbl: UILabel?
+    let screenSize = UIScreen.main.bounds
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +33,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         
         configureLocationServices()
         addDoubleTap()
+        addSwipe()
     }
     
     func addDoubleTap() {
@@ -38,6 +44,36 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         
         //Add the tap gesture to the map view
         mapView.addGestureRecognizer(doubleTap)
+    }
+    
+    func addSwipe() {
+        let swipe = UISwipeGestureRecognizer(target: self, action: #selector(animateViewDown))
+        swipe.direction = .down
+        
+        pullUpView.addGestureRecognizer(swipe)
+    }
+    
+    func animateViewUp() {
+        pullUpViewHeightConstraint.constant = 300
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    @objc func animateViewDown() {
+        pullUpViewHeightConstraint.constant = 0
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    func addSpinner() {
+        spinner = UIActivityIndicatorView()
+        spinner?.center = CGPoint(x: (screenSize.width/2)-((spinner?.frame.width)!/2), y: 150)
+        spinner?.style = .large
+        spinner?.color = #colorLiteral(red: 0.3333333433, green: 0.3333333433, blue: 0.3333333433, alpha: 1)
+        spinner?.startAnimating()
+        pullUpView.addSubview(spinner!)
     }
 
     //Actions
@@ -73,6 +109,7 @@ extension MapVC: MKMapViewDelegate {
         //Remove all pins before adding the new one
         removeAllPins()
         
+        
         //get touch point (x,y) from gesture recognizer
         let touchPoint = sender.location(in: mapView)
         //Convert point to coordinate (lat,lng)
@@ -85,6 +122,9 @@ extension MapVC: MKMapViewDelegate {
         //Create a new coordinate region to center map on the pin
         let coordinateRegion = MKCoordinateRegion.init(center: touchCoordinate, latitudinalMeters: regionRadius * 2.0, longitudinalMeters: regionRadius * 2.0)
         mapView.setRegion(coordinateRegion, animated: true)
+        
+        animateViewUp()
+        addSpinner()
     }
     
     func removeAllPins() {
