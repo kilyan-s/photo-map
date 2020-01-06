@@ -11,7 +11,7 @@ import MapKit
 import CoreLocation
 
 
-class MapVC: UIViewController {
+class MapVC: UIViewController, UIGestureRecognizerDelegate {
     //Outlets
     @IBOutlet weak var mapView: MKMapView!
     
@@ -27,6 +27,17 @@ class MapVC: UIViewController {
         locationManager.delegate = self
         
         configureLocationServices()
+        addDoubleTap()
+    }
+    
+    func addDoubleTap() {
+        //Create a double tap gesture
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(dropPin(sender:)))
+        doubleTap.numberOfTapsRequired = 2
+        doubleTap.delegate = self
+        
+        //Add the tap gesture to the map view
+        mapView.addGestureRecognizer(doubleTap)
     }
 
     //Actions
@@ -46,6 +57,28 @@ extension MapVC: MKMapViewDelegate {
         let coordinateRegion = MKCoordinateRegion.init(center: userCoordinate, latitudinalMeters: regionRadius * 2.0, longitudinalMeters: regionRadius * 2.0)
         //Center map on region
         mapView.setRegion(coordinateRegion, animated: true)
+    }
+    
+    @objc func dropPin(sender: UITapGestureRecognizer) {
+        //Remove all pins before adding the new one
+        removeAllPins()
+        
+        //get touch point (x,y) from gesture recognizer
+        let touchPoint = sender.location(in: mapView)
+        //Convert point to coordinate (lat,lng)
+        let touchCoordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
+        
+        //Create a new pin and add it to mapview
+        let annotation = DroppablePin(coordinate: touchCoordinate, identifier: "Droppable Pin")
+        mapView.addAnnotation(annotation)
+        
+        //Create a new coordinate region to center map on the pin
+        let coordinateRegion = MKCoordinateRegion.init(center: touchCoordinate, latitudinalMeters: regionRadius * 2.0, longitudinalMeters: regionRadius * 2.0)
+        mapView.setRegion(coordinateRegion, animated: true)
+    }
+    
+    func removeAllPins() {
+        mapView.removeAnnotations(mapView.annotations)
     }
 }
 
