@@ -7,15 +7,25 @@
 //
 
 import UIKit
-import Alamofire
+import MapKit
+
 
 class MapVC: UIViewController {
-
+    //Outlets
+    @IBOutlet weak var mapView: MKMapView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        mapView.delegate = self
     }
 
-
+    //Actions
+    @IBAction func centerMapBtnPressed(_ sender: Any) {
+    }
+    
 }
 
+extension MapVC: MKMapViewDelegate {
+    
+}
