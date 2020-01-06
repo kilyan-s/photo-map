@@ -8,4 +8,5 @@ target 'photo-map' do
   # Pods for photo-map
   pod 'Alamofire'
   pod 'AlamofireImage'
+  pod 'SwiftyJSON'
 end

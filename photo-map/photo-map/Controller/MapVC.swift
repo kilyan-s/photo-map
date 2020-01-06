@@ -9,7 +9,9 @@
 import UIKit
 import MapKit
 import CoreLocation
-
+import Alamofire
+import AlamofireImage
+import SwiftyJSON
 
 class MapVC: UIViewController, UIGestureRecognizerDelegate {
     //Outlets
@@ -27,6 +29,8 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     
     var flowLayout = UICollectionViewFlowLayout()
     var collectionView: UICollectionView?
+    
+    var imageUrl = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -161,10 +165,42 @@ extension MapVC: MKMapViewDelegate {
         animateViewUp()
         addSpinner()
         addProgressLabel()
+        
+        retrieveUrls(forAnnotation: annotation) { (success) in
+            if success { }
+            print(self.imageUrl)
+        }
+        
     }
     
     func removeAllPins() {
         mapView.removeAnnotations(mapView.annotations)
+    }
+    
+    func retrieveUrls(forAnnotation annotation: DroppablePin, completion: @escaping CompletionHandler) {
+        imageUrl = []
+        
+        Alamofire.request(flickrUrl(forApiKey: FLICKR_API_KEY, withAnnotation: annotation, andNumberOfPhotos: 40)).responseJSON { (response) in
+            print(response)
+            if response.result.error == nil {
+                
+                guard let data = response.data else { return }
+                
+                if let jsonData = try? JSON(data: data) {
+                    if let photosDict = jsonData["photos"]["photo"].array {
+                        for photo in photosDict {
+                            let postUrl = "https://live.staticflickr.com/\(photo["server"])/\(photo["id"])_\(photo["secret"])_c_d.jpg"
+                            self.imageUrl.append(postUrl)
+                       }
+                    }
+                }
+                completion(true)
+            } else {
+                completion(false)
+            }
+            
+            
+        }
     }
 }
 
