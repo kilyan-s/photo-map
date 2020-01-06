@@ -1,0 +1,6 @@
+framework module Pods_photo_map {
+  umbrella header "Pods-photo-map-umbrella.h"
+
+  export *
+  module * { export * }
+}

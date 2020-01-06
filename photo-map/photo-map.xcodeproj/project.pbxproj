@@ -13,6 +13,7 @@
 		3176AE3A23C3C34F00D82D1A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3176AE3823C3C34F00D82D1A /* Main.storyboard */; };
 		3176AE3C23C3C35700D82D1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3176AE3B23C3C35700D82D1A /* Assets.xcassets */; };
 		3176AE3F23C3C35700D82D1A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3176AE3D23C3C35700D82D1A /* LaunchScreen.storyboard */; };
+		679C4AF063D96DCCAF668D67 /* Pods_photo_map.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 856A123144B73DBEA7985DC8 /* Pods_photo_map.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,9 @@
 		3176AE3B23C3C35700D82D1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3176AE3E23C3C35700D82D1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3176AE4023C3C35700D82D1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5CBFFB6C6C3F489CA4397944 /* Pods-photo-map.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-photo-map.release.xcconfig"; path = "Target Support Files/Pods-photo-map/Pods-photo-map.release.xcconfig"; sourceTree = "<group>"; };
+		856A123144B73DBEA7985DC8 /* Pods_photo_map.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_photo_map.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA7F595DD746C3DAA6C2B855 /* Pods-photo-map.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-photo-map.debug.xcconfig"; path = "Target Support Files/Pods-photo-map/Pods-photo-map.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,17 +35,30 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				679C4AF063D96DCCAF668D67 /* Pods_photo_map.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0C3A03764304680F8399880A /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				EA7F595DD746C3DAA6C2B855 /* Pods-photo-map.debug.xcconfig */,
+				5CBFFB6C6C3F489CA4397944 /* Pods-photo-map.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		3176AE2623C3C34F00D82D1A = {
 			isa = PBXGroup;
 			children = (
 				3176AE3123C3C34F00D82D1A /* photo-map */,
 				3176AE3023C3C34F00D82D1A /* Products */,
+				0C3A03764304680F8399880A /* Pods */,
+				3A3D24B832074D2A9AB196B1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -115,6 +132,14 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		3A3D24B832074D2A9AB196B1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				856A123144B73DBEA7985DC8 /* Pods_photo_map.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -122,9 +147,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3176AE4323C3C35700D82D1A /* Build configuration list for PBXNativeTarget "photo-map" */;
 			buildPhases = (
+				C1F2BDBB73BF0AAD3FE4E440 /* [CP] Check Pods Manifest.lock */,
 				3176AE2B23C3C34F00D82D1A /* Sources */,
 				3176AE2C23C3C34F00D82D1A /* Frameworks */,
 				3176AE2D23C3C34F00D82D1A /* Resources */,
+				A6F4CA09B9DABB7BB7F4570A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -180,6 +207,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A6F4CA09B9DABB7BB7F4570A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-photo-map/Pods-photo-map-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-photo-map/Pods-photo-map-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-photo-map/Pods-photo-map-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C1F2BDBB73BF0AAD3FE4E440 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-photo-map-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3176AE2B23C3C34F00D82D1A /* Sources */ = {
@@ -330,6 +399,7 @@
 		};
 		3176AE4423C3C35700D82D1A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EA7F595DD746C3DAA6C2B855 /* Pods-photo-map.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -347,6 +417,7 @@
 		};
 		3176AE4523C3C35700D82D1A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5CBFFB6C6C3F489CA4397944 /* Pods-photo-map.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
