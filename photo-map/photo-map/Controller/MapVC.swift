@@ -31,6 +31,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     var collectionView: UICollectionView?
     
     var imageUrl = [String]()
+    var imageArray = [UIImage]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,6 +76,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     }
     
     @objc func animateViewDown() {
+        cancelAllSessions()
         pullUpViewHeightConstraint.constant = 0
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
@@ -147,6 +149,8 @@ extension MapVC: MKMapViewDelegate {
         //Remove all spinners and progress label before adding the new one
         removeSpinner()
         removeProgressLabel()
+        //Cancel all sessions in case images are currently downloading
+        cancelAllSessions()
         
         
         //get touch point (x,y) from gesture recognizer
@@ -167,8 +171,17 @@ extension MapVC: MKMapViewDelegate {
         addProgressLabel()
         
         retrieveUrls(forAnnotation: annotation) { (success) in
-            if success { }
-            print(self.imageUrl)
+            //Got urls
+            if success {
+                self.retrieveImages { (success) in
+                    if success {
+                        //Got images
+                        self.removeSpinner()
+                        self.removeProgressLabel()
+                        //Reload collection view
+                    }
+                }
+            }
         }
         
     }
@@ -181,7 +194,7 @@ extension MapVC: MKMapViewDelegate {
         imageUrl = []
         
         Alamofire.request(flickrUrl(forApiKey: FLICKR_API_KEY, withAnnotation: annotation, andNumberOfPhotos: 40)).responseJSON { (response) in
-            print(response)
+            //print(response)
             if response.result.error == nil {
                 
                 guard let data = response.data else { return }
@@ -198,8 +211,37 @@ extension MapVC: MKMapViewDelegate {
             } else {
                 completion(false)
             }
+        }
+    }
+    
+    func retrieveImages(completion: @escaping CompletionHandler) {
+        imageArray = []
+        //Loop through all images urls saved in retrieveUrls()
+        for url in imageUrl {
+            Alamofire.request(url).responseImage { (response) in
+                guard let image = response.result.value else { return }
+                self.imageArray.append(image)
+                self.progressLbl?.text = "\(self.imageArray.count)/40 images downloaded"
+                
+                if self.imageArray.count == self.imageUrl.count {
+                    completion(true)
+                }
+            }
+        }
+    }
+    
+    func cancelAllSessions() {
+        Alamofire.SessionManager.default.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
+            //sessionDataTask.forEach({ $0.cancel() })
+            //downloadData.forEach({ $0.cancel() })
             
+            sessionDataTask.forEach { (session) in
+                session.cancel()
+            }
             
+            downloadData.forEach { (data) in
+                data.cancel()
+            }
         }
     }
 }
