@@ -30,9 +30,6 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     var flowLayout = UICollectionViewFlowLayout()
     var collectionView: UICollectionView?
     
-    var imageUrl = [String]()
-    var imageArray = [UIImage]()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -76,7 +73,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     }
     
     @objc func animateViewDown() {
-        cancelAllSessions()
+        FlickrService.instance.cancelAllSessions()
         pullUpViewHeightConstraint.constant = 0
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
@@ -104,7 +101,6 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         progressLbl?.font = UIFont(name: "Avenir-Next", size: 18)
         progressLbl?.textColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
         progressLbl?.textAlignment = .center
-        //progressLbl?.text = "12/40 photos loaded"
         collectionView?.addSubview(progressLbl!)
     }
     
@@ -120,7 +116,6 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
             centerMapOnUserLocation()
         }
     }
-    
 }
 
 extension MapVC: MKMapViewDelegate {
@@ -150,10 +145,10 @@ extension MapVC: MKMapViewDelegate {
         removeSpinner()
         removeProgressLabel()
         //Cancel all sessions in case images are currently downloading
-        cancelAllSessions()
-        
-        imageUrl = []
-        imageArray = []
+        FlickrService.instance.cancelAllSessions()
+        //Clear images array before new request
+        FlickrService.instance.clearImagesArray()
+        //Reload tableview to remove previous images
         self.collectionView?.reloadData()
         
         
@@ -174,77 +169,26 @@ extension MapVC: MKMapViewDelegate {
         addSpinner()
         addProgressLabel()
         
-        retrieveUrls(forAnnotation: annotation) { (success) in
-            //Got urls
+        //Retrieves images urls trhough flickr API
+        FlickrService.instance.retrieveUrls(forAnnotation: annotation) { (success) in
+            //Got all urls now retrieve each image
             if success {
-                self.retrieveImages { (success) in
+                //Retrieve images
+                FlickrService.instance.retrieveImages(sender: self) { (success) in
                     if success {
-                        //Got images
+                        //Got all images
                         self.removeSpinner()
                         self.removeProgressLabel()
                         //Reload collection view
                         self.collectionView?.reloadData()
                     }
                 }
-            }
+           }
         }
-        
     }
     
     func removeAllPins() {
         mapView.removeAnnotations(mapView.annotations)
-    }
-    
-    func retrieveUrls(forAnnotation annotation: DroppablePin, completion: @escaping CompletionHandler) {
-        Alamofire.request(flickrUrl(forApiKey: FLICKR_API_KEY, withAnnotation: annotation, andNumberOfPhotos: 40)).responseJSON { (response) in
-            //print(response)
-            if response.result.error == nil {
-                
-                guard let data = response.data else { return }
-                
-                if let jsonData = try? JSON(data: data) {
-                    if let photosDict = jsonData["photos"]["photo"].array {
-                        for photo in photosDict {
-                            let postUrl = "https://live.staticflickr.com/\(photo["server"])/\(photo["id"])_\(photo["secret"])_c_d.jpg"
-                            self.imageUrl.append(postUrl)
-                       }
-                    }
-                }
-                completion(true)
-            } else {
-                completion(false)
-            }
-        }
-    }
-    
-    func retrieveImages(completion: @escaping CompletionHandler) {
-        //Loop through all images urls saved in retrieveUrls()
-        for url in imageUrl {
-            Alamofire.request(url).responseImage { (response) in
-                guard let image = response.result.value else { return }
-                self.imageArray.append(image)
-                self.progressLbl?.text = "\(self.imageArray.count)/40 images downloaded"
-                
-                if self.imageArray.count == self.imageUrl.count {
-                    completion(true)
-                }
-            }
-        }
-    }
-    
-    func cancelAllSessions() {
-        Alamofire.SessionManager.default.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
-            //sessionDataTask.forEach({ $0.cancel() })
-            //downloadData.forEach({ $0.cancel() })
-            
-            sessionDataTask.forEach { (session) in
-                session.cancel()
-            }
-            
-            downloadData.forEach { (data) in
-                data.cancel()
-            }
-        }
     }
 }
 
@@ -269,19 +213,19 @@ extension MapVC: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageArray.count
+        return FlickrService.instance.imageArray.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
-        let imageView = UIImageView(image: imageArray[indexPath.row])
+        let imageView = UIImageView(image: FlickrService.instance.imageArray[indexPath.row])
         cell.addSubview(imageView)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let popVC = storyboard?.instantiateViewController(withIdentifier: "PopVC") as? PopVC else { return }
-        popVC.initData(forImage: imageArray[indexPath.row])
+        popVC.initData(forImage: FlickrService.instance.imageArray[indexPath.row])
         present(popVC, animated: true, completion: nil)
     }
 }
