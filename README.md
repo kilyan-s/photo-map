@@ -7,9 +7,9 @@ Double click on the map to drop a pin and display available picture near this lo
 * Swift 5
 * MapKit
 * CoreLocation
-* Alamofire
-* AlamofireImage
-* SwiftyJSON
+* [Alamofire](https://github.com/Alamofire/Alamofire)
+* [AlamofireImage](https://github.com/Alamofire/AlamofireImage)
+* [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON)
 
 ## Screenshots
 <img src="https://raw.githubusercontent.com/kilyan-s/photo-map/master/Screenshot/0.png" alt="map center on user location" width="200"/> <img src="https://raw.githubusercontent.com/kilyan-s/photo-map/master/Screenshot/1.png" alt="display pictures for location" width="200"/> <img src="https://raw.githubusercontent.com/kilyan-s/photo-map/master/Screenshot/2.png" alt="display picture fullscreen" width="200"/>
